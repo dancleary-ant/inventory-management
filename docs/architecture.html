@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst Components — System Architecture</title>
+<style>
+  :root {
+    --ink: #0f172a; --muted: #64748b; --line: #e2e8f0;
+    --bg: #f8fafc; --card: #ffffff;
+    --blue: #2563eb; --green: #16a34a; --amber: #d97706;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.55; padding: 48px 24px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 30px; letter-spacing: -0.5px; }
+  .sub { color: var(--muted); margin: 6px 0 36px; }
+  h2 { font-size: 18px; margin: 40px 0 16px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 24px; }
+
+  /* diagram */
+  .diagram { display: grid; grid-template-columns: 1fr 56px 1fr 56px 1fr; align-items: stretch; gap: 0; }
+  .tier { border: 2px solid var(--line); border-radius: 10px; padding: 18px; background: var(--card); }
+  .tier h3 { font-size: 15px; margin-bottom: 2px; }
+  .tier .port { font-size: 12px; font-weight: 600; margin-bottom: 12px; display: inline-block; padding: 1px 8px; border-radius: 99px; }
+  .t-front { border-color: var(--blue); } .t-front .port { background: #dbeafe; color: var(--blue); }
+  .t-back  { border-color: var(--green); } .t-back .port { background: #dcfce7; color: var(--green); }
+  .t-data  { border-color: var(--amber); } .t-data .port { background: #fef3c7; color: var(--amber); }
+  .tier ul { list-style: none; }
+  .tier li { font-size: 13px; color: var(--muted); padding: 3px 0; border-top: 1px dashed var(--line); }
+  .tier li:first-child { border-top: 0; }
+  .tier li code { color: var(--ink); }
+  .arrow { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); font-size: 11px; text-align: center; }
+  .arrow .glyph { font-size: 22px; color: var(--ink); line-height: 1; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+
+  /* data flow */
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; }
+  .flow .step { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+  .flow .sep { color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--line); }
+  th { background: #f1f5f9; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .stack-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+  .stack-item:last-child { border-bottom: 0; }
+  .stack-item span:last-child { color: var(--muted); }
+  @media (max-width: 760px) { .diagram, .grid2 { grid-template-columns: 1fr; } .arrow { transform: rotate(90deg); padding: 10px 0; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Catalyst Components — System Architecture</h1>
+  <p class="sub">Factory Inventory Management System · Vue 3 SPA + FastAPI backend + in-memory JSON data (no database)</p>
+
+  <h2>System Overview</h2>
+  <div class="diagram">
+    <div class="tier t-front">
+      <h3>Frontend — Vue 3 SPA</h3>
+      <span class="port">localhost:3000 · Vite</span>
+      <ul>
+        <li>7 views: Dashboard, Inventory, Orders, Spending, Demand, Backlog, Reports</li>
+        <li><code>App.vue</code> — nav, global styles, view switching</li>
+        <li><code>FilterBar.vue</code> — 4 global filters</li>
+        <li>Composables: <code>useFilters</code>, <code>useI18n</code> (EN/JA), <code>useAuth</code></li>
+        <li>Custom SVG charts, CSS Grid layouts</li>
+      </ul>
+    </div>
+    <div class="arrow"><span class="glyph">⇄</span>HTTP<br>axios<br><code>api.js</code></div>
+    <div class="tier t-back">
+      <h3>Backend — FastAPI</h3>
+      <span class="port">localhost:8001 · uvicorn</span>
+      <ul>
+        <li><code>main.py</code> — 15 GET endpoints under <code>/api/*</code></li>
+        <li>Query-param filtering: warehouse, category, status, month</li>
+        <li>Pydantic response models validate every payload</li>
+        <li>CORS enabled for the Vite dev origin</li>
+        <li>Swagger UI at <code>/docs</code></li>
+      </ul>
+    </div>
+    <div class="arrow"><span class="glyph">→</span>loaded at<br>startup<br><code>mock_data.py</code></div>
+    <div class="tier t-data">
+      <h3>Data — JSON files</h3>
+      <span class="port">server/data/ · in-memory</span>
+      <ul>
+        <li><code>inventory.json</code></li>
+        <li><code>orders.json</code> · <code>purchase_orders.json</code></li>
+        <li><code>demand_forecasts.json</code></li>
+        <li><code>backlog_items.json</code></li>
+        <li><code>spending.json</code> · <code>transactions.json</code></li>
+        <li>Regenerate with <code>generate_data.py</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Request / Data Flow</h2>
+  <div class="card">
+    <div class="flow">
+      <span class="step">User changes a filter</span><span class="sep">→</span>
+      <span class="step"><code>useFilters</code> reactive state</span><span class="sep">→</span>
+      <span class="step"><code>api.js</code> builds query params</span><span class="sep">→</span>
+      <span class="step">FastAPI endpoint filters in memory</span><span class="sep">→</span>
+      <span class="step">Pydantic validates response</span><span class="sep">→</span>
+      <span class="step">View refs update</span><span class="sep">→</span>
+      <span class="step">Computed properties re-render charts</span>
+    </div>
+  </div>
+
+  <h2>Tech Stack</h2>
+  <div class="grid2">
+    <div class="card">
+      <div class="stack-item"><span><strong>Vue 3</strong> (Composition API)</span><span>UI framework</span></div>
+      <div class="stack-item"><span><strong>Vite</strong></span><span>dev server &amp; bundler</span></div>
+      <div class="stack-item"><span><strong>axios</strong></span><span>HTTP client</span></div>
+      <div class="stack-item"><span><strong>Custom SVG</strong></span><span>charts (no chart lib)</span></div>
+    </div>
+    <div class="card">
+      <div class="stack-item"><span><strong>FastAPI</strong></span><span>API framework</span></div>
+      <div class="stack-item"><span><strong>uvicorn</strong></span><span>ASGI server</span></div>
+      <div class="stack-item"><span><strong>Pydantic</strong></span><span>schema validation</span></div>
+      <div class="stack-item"><span><strong>JSON files</strong></span><span>mock data store</span></div>
+    </div>
+  </div>
+
+  <h2>API Endpoints</h2>
+  <table>
+    <tr><th>Endpoint</th><th>Purpose</th><th>Filters</th></tr>
+    <tr><td><code>GET /api/inventory</code> · <code>/{id}</code></td><td>Stock across warehouses</td><td>warehouse, category</td></tr>
+    <tr><td><code>GET /api/orders</code> · <code>/{id}</code></td><td>Order tracking</td><td>warehouse, category, status, month</td></tr>
+    <tr><td><code>GET /api/dashboard/summary</code></td><td>KPI cards &amp; summaries</td><td>all four</td></tr>
+    <tr><td><code>GET /api/demand</code></td><td>Demand forecasts</td><td>—</td></tr>
+    <tr><td><code>GET /api/backlog</code></td><td>Backlog items</td><td>—</td></tr>
+    <tr><td><code>GET /api/spending/*</code></td><td>summary · monthly · categories · transactions</td><td>varies</td></tr>
+    <tr><td><code>GET /api/reports/*</code></td><td>quarterly · monthly-trends</td><td>varies</td></tr>
+  </table>
+
+  <h2>Key Directories</h2>
+  <table>
+    <tr><th>Path</th><th>Contents</th></tr>
+    <tr><td><code>client/src/views/</code></td><td>One .vue file per page (7 views)</td></tr>
+    <tr><td><code>client/src/components/</code></td><td>Modals, FilterBar, LanguageSwitcher, ProfileMenu</td></tr>
+    <tr><td><code>client/src/composables/</code></td><td>Shared reactive logic (filters, i18n, auth)</td></tr>
+    <tr><td><code>client/src/locales/</code></td><td>en.js / ja.js translation dictionaries</td></tr>
+    <tr><td><code>server/main.py</code></td><td>FastAPI app: endpoints, Pydantic models, filtering</td></tr>
+    <tr><td><code>server/data/</code></td><td>Seven JSON data files loaded at startup</td></tr>
+    <tr><td><code>tests/backend/</code></td><td>pytest + FastAPI TestClient suite</td></tr>
+  </table>
+</div>
+</body>
+</html>
