@@ -1,42 +1,147 @@
 <template>
-  <div class="app">
-    <header class="top-nav">
-      <div class="nav-container">
+  <div class="app" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
+    <aside class="sidebar">
+      <div class="sidebar-header">
         <div class="logo">
-          <h1>{{ t('nav.companyName') }}</h1>
-          <span class="subtitle">{{ t('nav.subtitle') }}</span>
+          <div class="logo-mark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2 2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <div class="logo-text">
+            <span class="logo-name">{{ t('nav.companyName') }}</span>
+            <span class="logo-subtitle">{{ t('nav.subtitle') }}</span>
+          </div>
         </div>
-        <nav class="nav-tabs">
-          <router-link to="/" :class="{ active: $route.path === '/' }">
-            {{ t('nav.overview') }}
-          </router-link>
-          <router-link to="/inventory" :class="{ active: $route.path === '/inventory' }">
-            {{ t('nav.inventory') }}
-          </router-link>
-          <router-link to="/orders" :class="{ active: $route.path === '/orders' }">
-            {{ t('nav.orders') }}
-          </router-link>
-          <router-link to="/spending" :class="{ active: $route.path === '/spending' }">
-            {{ t('nav.finance') }}
-          </router-link>
-          <router-link to="/demand" :class="{ active: $route.path === '/demand' }">
-            {{ t('nav.demandForecast') }}
-          </router-link>
-          <router-link to="/reports" :class="{ active: $route.path === '/reports' }">
-            Reports
-          </router-link>
-        </nav>
+        <button
+          class="sidebar-toggle"
+          aria-label="Toggle navigation"
+          @click="toggleSidebar"
+        >
+          <svg class="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 17l-5-5 5-5" />
+            <path d="M18 17l-5-5 5-5" />
+          </svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <router-link
+          to="/"
+          class="nav-item"
+          :class="{ active: $route.path === '/' }"
+          :title="isSidebarCollapsed ? t('nav.overview') : null"
+        >
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <path d="M9 22V12h6v10" />
+          </svg>
+          <span class="nav-label">{{ t('nav.overview') }}</span>
+        </router-link>
+
+        <router-link
+          to="/inventory"
+          class="nav-item"
+          :class="{ active: $route.path === '/inventory' }"
+          :title="isSidebarCollapsed ? t('nav.inventory') : null"
+        >
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+            <path d="M3.27 6.96 12 12.01l8.73-5.05" />
+            <path d="M12 22.08V12" />
+          </svg>
+          <span class="nav-label">{{ t('nav.inventory') }}</span>
+        </router-link>
+
+        <router-link
+          to="/orders"
+          class="nav-item"
+          :class="{ active: $route.path === '/orders' }"
+          :title="isSidebarCollapsed ? t('nav.orders') : null"
+        >
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+          <span class="nav-label">{{ t('nav.orders') }}</span>
+        </router-link>
+
+        <router-link
+          to="/spending"
+          class="nav-item"
+          :class="{ active: $route.path === '/spending' }"
+          :title="isSidebarCollapsed ? t('nav.finance') : null"
+        >
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1v22" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          <span class="nav-label">{{ t('nav.finance') }}</span>
+        </router-link>
+
+        <router-link
+          to="/demand"
+          class="nav-item"
+          :class="{ active: $route.path === '/demand' }"
+          :title="isSidebarCollapsed ? t('nav.demandForecast') : null"
+        >
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 6l-9.5 9.5-5-5L1 18" />
+            <path d="M17 6h6v6" />
+          </svg>
+          <span class="nav-label">{{ t('nav.demandForecast') }}</span>
+        </router-link>
+
+        <router-link
+          to="/restocking"
+          class="nav-item"
+          :class="{ active: $route.path === '/restocking' }"
+          :title="isSidebarCollapsed ? t('nav.restocking') : null"
+        >
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 4v6h-6" />
+            <path d="M1 20v-6h6" />
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10" />
+            <path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14" />
+          </svg>
+          <span class="nav-label">{{ t('nav.restocking') }}</span>
+        </router-link>
+
+        <router-link
+          to="/reports"
+          class="nav-item"
+          :class="{ active: $route.path === '/reports' }"
+          :title="isSidebarCollapsed ? 'Reports' : null"
+        >
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <path d="M14 2v6h6" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+            <path d="M10 9H8" />
+          </svg>
+          <span class="nav-label">Reports</span>
+        </router-link>
+      </nav>
+
+      <div class="sidebar-footer">
         <LanguageSwitcher />
         <ProfileMenu
           @show-profile-details="showProfileDetails = true"
           @show-tasks="showTasks = true"
         />
       </div>
-    </header>
-    <FilterBar />
-    <main class="main-content">
-      <router-view />
-    </main>
+    </aside>
+
+    <div class="app-body">
+      <FilterBar />
+      <main class="main-content">
+        <router-view />
+      </main>
+    </div>
 
     <ProfileDetailsModal
       :is-open="showProfileDetails"
@@ -55,7 +160,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { api } from './api'
 import { useAuth } from './composables/useAuth'
 import { useI18n } from './composables/useI18n'
@@ -64,6 +169,9 @@ import ProfileMenu from './components/ProfileMenu.vue'
 import ProfileDetailsModal from './components/ProfileDetailsModal.vue'
 import TasksModal from './components/TasksModal.vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
+
+const SIDEBAR_STORAGE_KEY = 'sidebar-collapsed'
+const SMALL_SCREEN_WIDTH = 1024
 
 export default {
   name: 'App',
@@ -80,6 +188,34 @@ export default {
     const showProfileDetails = ref(false)
     const showTasks = ref(false)
     const apiTasks = ref([])
+
+    // Sidebar collapse state: an explicit user choice (persisted in
+    // localStorage) wins; otherwise default expanded on desktop and
+    // collapsed under 1024px.
+    const storedSidebar = localStorage.getItem(SIDEBAR_STORAGE_KEY)
+    const isSidebarCollapsed = ref(
+      storedSidebar !== null
+        ? storedSidebar === 'true'
+        : window.innerWidth < SMALL_SCREEN_WIDTH
+    )
+
+    const toggleSidebar = () => {
+      isSidebarCollapsed.value = !isSidebarCollapsed.value
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isSidebarCollapsed.value))
+    }
+
+    // Follow the responsive default only while the user hasn't toggled
+    // manually; react when the viewport crosses the 1024px breakpoint.
+    let wasSmallScreen = window.innerWidth < SMALL_SCREEN_WIDTH
+    const handleResize = () => {
+      const isSmallScreen = window.innerWidth < SMALL_SCREEN_WIDTH
+      if (isSmallScreen !== wasSmallScreen) {
+        wasSmallScreen = isSmallScreen
+        if (localStorage.getItem(SIDEBAR_STORAGE_KEY) === null) {
+          isSidebarCollapsed.value = isSmallScreen
+        }
+      }
+    }
 
     // Merge mock tasks from currentUser with API tasks
     const tasks = computed(() => {
@@ -146,10 +282,19 @@ export default {
       }
     }
 
-    onMounted(loadTasks)
+    onMounted(() => {
+      loadTasks()
+      window.addEventListener('resize', handleResize)
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleResize)
+    })
 
     return {
       t,
+      isSidebarCollapsed,
+      toggleSidebar,
       showProfileDetails,
       showTasks,
       tasks,
@@ -168,6 +313,13 @@ export default {
   box-sizing: border-box;
 }
 
+:root {
+  --sidebar-width: 240px;
+  --sidebar-width-collapsed: 64px;
+  --accent: #3b82f6;
+  --accent-tint: #eff6ff;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background: #f8fafc;
@@ -177,132 +329,329 @@ body {
 }
 
 .app {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
 }
 
-.top-nav {
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-  position: sticky;
+/* ---------- Sidebar shell ---------- */
+
+.sidebar {
+  position: fixed;
   top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
   z-index: 100;
+  transition: width 0.2s ease;
 }
 
-.nav-container {
-  max-width: 1600px;
-  margin: 0 auto;
+.sidebar-collapsed .sidebar {
+  width: var(--sidebar-width-collapsed);
+}
+
+.app-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.2s ease;
+}
+
+.sidebar-collapsed .app-body {
+  margin-left: var(--sidebar-width-collapsed);
+}
+
+/* ---------- Sidebar header ---------- */
+
+.sidebar-header {
   display: flex;
   align-items: center;
-  padding: 0 2rem;
-  height: 70px;
+  gap: 8px;
+  padding: 16px 12px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.nav-container > .nav-tabs {
-  margin-left: auto;
-  margin-right: 1rem;
-}
-
-.nav-container > .language-switcher {
-  margin-right: 1rem;
+.sidebar-collapsed .sidebar-header {
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 8px;
 }
 
 .logo {
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
 }
 
-.logo h1 {
-  font-size: 1.375rem;
+.sidebar-collapsed .logo {
+  flex: none;
+  justify-content: center;
+}
+
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  transition: opacity 0.2s ease, width 0.2s ease;
+}
+
+.sidebar-collapsed .logo-text {
+  width: 0;
+  opacity: 0;
+}
+
+.logo-name {
+  font-size: 14px;
   font-weight: 700;
   color: #0f172a;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.subtitle {
-  font-size: 0.813rem;
+.logo-subtitle {
+  font-size: 11px;
   color: #64748b;
-  font-weight: 400;
-  padding-left: 0.75rem;
-  border-left: 1px solid #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.nav-tabs {
+.sidebar-toggle {
   display: flex;
-  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: #64748b;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.nav-tabs a {
-  padding: 0.625rem 1.25rem;
+.sidebar-toggle:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.toggle-icon {
+  transition: transform 0.2s ease;
+}
+
+.sidebar-collapsed .toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* ---------- Sidebar navigation ---------- */
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-collapsed .sidebar-nav {
+  padding: 12px 8px;
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
   color: #64748b;
   text-decoration: none;
+  font-size: 14px;
   font-weight: 500;
-  font-size: 0.938rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  position: relative;
+  overflow: hidden;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.nav-tabs a:hover {
-  color: #0f172a;
+.nav-item:hover {
   background: #f1f5f9;
+  color: #0f172a;
 }
 
-.nav-tabs a.active {
-  color: #2563eb;
-  background: #eff6ff;
+.nav-item.active {
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-weight: 600;
 }
 
-.nav-tabs a.active::after {
+/* Left accent bar on the active link */
+.nav-item::before {
   content: '';
   position: absolute;
-  bottom: -1px;
   left: 0;
-  right: 0;
-  height: 2px;
-  background: #2563eb;
+  top: 20%;
+  bottom: 20%;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
+
+.nav-item.active::before {
+  opacity: 1;
+}
+
+.nav-icon {
+  flex-shrink: 0;
+}
+
+.nav-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-collapsed .nav-item {
+  justify-content: center;
+  gap: 0;
+  padding: 10px;
+}
+
+.sidebar-collapsed .nav-label {
+  flex: none;
+  width: 0;
+  opacity: 0;
+}
+
+/* ---------- Sidebar footer (language + profile) ---------- */
+
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.sidebar-collapsed .sidebar-footer {
+  padding: 12px 8px;
+  align-items: center;
+}
+
+.sidebar-footer .language-switcher,
+.sidebar-footer .profile-menu {
+  width: 100%;
+}
+
+.sidebar-footer .language-button,
+.sidebar-footer .profile-button {
+  width: 100%;
+}
+
+/* Footer dropdowns open upward (the widgets sit at the viewport bottom) */
+.sidebar-footer .language-switcher .dropdown-menu,
+.sidebar-footer .profile-menu .dropdown-menu {
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: auto;
+}
+
+/* In collapsed mode the buttons are icon-only and dropdowns fly out
+   to the right of the sidebar so they aren't clipped by its 64px width */
+.sidebar-collapsed .sidebar-footer .language-button,
+.sidebar-collapsed .sidebar-footer .profile-button {
+  justify-content: center;
+  padding: 8px;
+}
+
+.sidebar-collapsed .sidebar-footer .profile-button {
+  padding: 4px;
+}
+
+.sidebar-collapsed .sidebar-footer .language-label,
+.sidebar-collapsed .sidebar-footer .profile-name {
+  display: none;
+}
+
+.sidebar-collapsed .sidebar-footer .chevron {
+  display: none;
+}
+
+.sidebar-collapsed .sidebar-footer .language-switcher .dropdown-menu,
+.sidebar-collapsed .sidebar-footer .profile-menu .dropdown-menu {
+  left: calc(100% + 8px);
+  bottom: 0;
+}
+
+/* ---------- Content area ---------- */
 
 .main-content {
   flex: 1;
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
-  padding: 1.5rem 2rem;
+  padding: 24px 32px;
 }
 
 .page-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
 }
 
 .page-header h2 {
-  font-size: 1.875rem;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 600;
   color: #0f172a;
-  margin-bottom: 0.375rem;
+  margin-bottom: 4px;
   letter-spacing: -0.025em;
 }
 
 .page-header p {
   color: #64748b;
-  font-size: 0.938rem;
+  font-size: 14px;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .stat-card {
   background: white;
-  padding: 1.25rem;
-  border-radius: 10px;
+  padding: 20px;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
   transition: all 0.2s ease;
 }
 
@@ -313,15 +662,15 @@ body {
 
 .stat-label {
   color: #64748b;
-  font-size: 0.875rem;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 0.625rem;
+  margin-bottom: 8px;
 }
 
 .stat-value {
-  font-size: 2.25rem;
+  font-size: 32px;
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.025em;
@@ -345,24 +694,25 @@ body {
 
 .card {
   background: white;
-  border-radius: 10px;
-  padding: 1.25rem;
+  border-radius: 12px;
+  padding: 20px;
   border: 1px solid #e2e8f0;
-  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  margin-bottom: 20px;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.875rem;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 1px solid #e2e8f0;
 }
 
 .card-title {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   color: #0f172a;
   letter-spacing: -0.025em;
 }
@@ -384,19 +734,19 @@ thead {
 
 th {
   text-align: left;
-  padding: 0.5rem 0.75rem;
+  padding: 8px 12px;
   font-weight: 600;
   color: #475569;
-  font-size: 0.75rem;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 td {
-  padding: 0.5rem 0.75rem;
+  padding: 8px 12px;
   border-top: 1px solid #f1f5f9;
   color: #334155;
-  font-size: 0.875rem;
+  font-size: 14px;
 }
 
 tbody tr {
@@ -409,9 +759,9 @@ tbody tr:hover {
 
 .badge {
   display: inline-block;
-  padding: 0.313rem 0.75rem;
+  padding: 4px 12px;
   border-radius: 6px;
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.025em;
@@ -469,18 +819,18 @@ tbody tr:hover {
 
 .loading {
   text-align: center;
-  padding: 3rem;
+  padding: 48px;
   color: #64748b;
-  font-size: 0.938rem;
+  font-size: 14px;
 }
 
 .error {
   background: #fef2f2;
   border: 1px solid #fecaca;
   color: #991b1b;
-  padding: 1rem;
+  padding: 16px;
   border-radius: 8px;
-  margin: 1rem 0;
-  font-size: 0.938rem;
+  margin: 16px 0;
+  font-size: 14px;
 }
 </style>
