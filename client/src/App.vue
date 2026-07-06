@@ -114,7 +114,7 @@
           to="/reports"
           class="nav-item"
           :class="{ active: $route.path === '/reports' }"
-          :title="isSidebarCollapsed ? 'Reports' : null"
+          :title="isSidebarCollapsed ? t('nav.reports') : null"
         >
           <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -123,7 +123,7 @@
             <path d="M16 17H8" />
             <path d="M10 9H8" />
           </svg>
-          <span class="nav-label">Reports</span>
+          <span class="nav-label">{{ t('nav.reports') }}</span>
         </router-link>
       </nav>
 
